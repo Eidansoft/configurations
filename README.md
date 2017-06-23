@@ -1,6 +1,7 @@
 # git-gui-tools
 My personal tools for a better git-gui
 
+## Have $FILENAMES variable for tools
 In order to get on GIT-GUI Tools the $FILENAMES variable availablea and be able to execute commands to multiple files for example "rm $FILENAMES" to delete all selected files, you need to medify the file:
 
     Git_PATH/share/git-gui/lib/tools.tcl
@@ -15,6 +16,7 @@ The modified lines are:
     103 set env(FILENAMES) [array names selected_paths]
     126 unset env(FILENAMES)
 
+## Set default commit message
 In order to have the default branch name in all commits at Git-Gui you need also modify the files:
  * /usr/local/git/share/git-gui/lib/git-gui.tcl
  * /usr/local/git/share/git-gui/lib/commit.tcl
