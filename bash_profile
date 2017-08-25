@@ -31,13 +31,15 @@ function encryptFileGpg2 {
 	FILE=$1
 	echo "Encriptando $FILE"
         gpg2 -o ${FILE}.gpg --symmetric $FILE
-        echo "$FILE encriptado en ${FILE}.gpg"
+        echo "[INFO] $FILE encriptado en ${FILE}.gpg"
+}
+
 }
 
 # Creo funcion que abre el sublime para editar un archivo
 function sublime {
 	if [ "$1" == "" ]; then
-		echo "ERROR: Tienes que pasar el archivo a editar"
+		echo "[ERROR] Tienes que pasar el archivo a editar"
 	else
 		file=$1
 		pushd $(pwd) > /dev/null
