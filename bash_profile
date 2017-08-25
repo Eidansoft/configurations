@@ -40,6 +40,13 @@ function editBashProfile {
 	source /Users/alorente/.bash_profile
 }
 
+# Funcion que incluye rutas al path sin repetir
+function add_to_path {
+    ruta=$1
+    echo "$PATH" | grep -e ":\?${ruta}:" > /dev/null
+    if [ "$?" != 0 ]; then
+	export PATH="${ruta}:${PATH}"
+    fi
 }
 
 # Creo funcion que abre el sublime para editar un archivo
@@ -69,11 +76,11 @@ function openWireshark {
 	wireshark
 }
 
-# Configuro el PATH con GIT y MySQL
-PATH=/usr/local/git/bin:$PATH
-export PATH=/usr/local/mysql/bin:$PATH
 
-echo "DONE!"
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+# Cargando las variables de entorno
+add_to_path "/usr/local/bin"
+add_to_path "/usr/local/opt/python/libexec/bin"
 # Aliases
 alias ebp="editBashProfile"
 
