@@ -94,9 +94,8 @@ function openWireshark {
 	sudo chmod 644 /dev/bpf*
 	wireshark
 }
-
-export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 # Cargando las variables de entorno
+add_to_path "/usr/local/opt/python/libexec/bin"
 add_to_path "/usr/local/bin"
 add_to_path "/usr/local/opt/python/libexec/bin"
 
