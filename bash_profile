@@ -34,6 +34,12 @@ function encryptFileGpg2 {
         echo "[INFO] $FILE encriptado en ${FILE}.gpg"
 }
 
+# Creo funcion que me permite editar el .bash_profile y cargarlo directamente
+function editBashProfile {
+	/Applications/Emacs.app/Contents/MacOS/Emacs -nw /Users/alorente/.bash_profile
+	source /Users/alorente/.bash_profile
+}
+
 }
 
 # Creo funcion que abre el sublime para editar un archivo
@@ -68,6 +74,8 @@ PATH=/usr/local/git/bin:$PATH
 export PATH=/usr/local/mysql/bin:$PATH
 
 echo "DONE!"
+# Aliases
+alias ebp="editBashProfile"
 
 # Setting PATH for Python 3.6
 # The original version is saved in .bash_profile.pysave
