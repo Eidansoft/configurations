@@ -56,10 +56,10 @@ function sublime {
 	else
 		file=$1
 		pushd $(pwd) > /dev/null
-		echo "Editando archivo $file ..."
-		/Applications/Sublime\ Text.app/Contents/MacOS/Sublime\ Text $file &> /dev/null
+		echo "[INFO] Editando archivo $file ..."
+		/Applications/Sublime\ Text.app/Contents/MacOS/Sublime\ Text $file &> /dev/null &
 		popd > /dev/null
-		echo "FIN"
+		echo "[INFO] Archivo $file abierto en ventana nueva con el Sublime"
 	fi
 }
 
