@@ -17,11 +17,14 @@ function tunnelingNecotex {
 
 # Funcion para encriptar
 function unencryptFileGpg2 {
-	FILE=$1
-	[ "${FILE##*.}" != "gpg" ] && echo "El archivo no tiene extension *.gpg" && exit 1
-	echo "Desencriptando $FILE"
+    FILE=$1
+    if [ "${FILE##*.}" != "gpg" ]; then
+	echo "[INFO] El archivo no tiene extension *.gpg"
+    else
+	echo "[INFO] Desencriptando $FILE"
 	gpg2 -o ${FILE%.*} --decrypt $FILE
-	echo "$FILE desencriptado en ${FILE%.*}"
+	echo "[INFO] $FILE desencriptado en ${FILE%.*}"
+    fi
 }
 
 function encryptFileGpg2 {
