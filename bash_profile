@@ -95,11 +95,11 @@ function openWireshark {
 	wireshark
 }
 
-
 export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 # Cargando las variables de entorno
 add_to_path "/usr/local/bin"
 add_to_path "/usr/local/opt/python/libexec/bin"
+
 # Aliases
 alias ebp="editBashProfile"
 alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs"
@@ -121,7 +121,3 @@ echo "Cargado."
 source ~/.git-prompt.sh
 GIT_PS1_SHOWDIRTYSTATE=true
 export PS1='\[\033[32m\]\w\[\033[33m\]$(__git_ps1)\[\033[00m\] $ '
-# Setting PATH for Python 3.6
-# The original version is saved in .bash_profile.pysave
-PATH="/Library/Frameworks/Python.framework/Versions/3.6/bin:${PATH}"
-export PATH
