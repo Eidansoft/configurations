@@ -28,16 +28,16 @@ function unencryptFileGpg2 {
 }
 
 function encryptFileGpg2 {
-	FILE=$1
-	echo "Encriptando $FILE"
-        gpg2 -o ${FILE}.gpg --symmetric $FILE
-        echo "[INFO] $FILE encriptado en ${FILE}.gpg"
+    FILE=$1
+    echo "Encriptando $FILE"
+    gpg2 -o ${FILE}.gpg --symmetric $FILE
+    echo "[INFO] $FILE encriptado en ${FILE}.gpg"
 }
 
 # Creo funcion que me permite editar el .bash_profile y cargarlo directamente
 function editBashProfile {
-	/Applications/Emacs.app/Contents/MacOS/Emacs -nw /Users/alorente/.bash_profile
-	source /Users/alorente/.bash_profile
+    /Applications/Emacs.app/Contents/MacOS/Emacs -nw /Users/alorente/.bash_profile
+    source /Users/alorente/.bash_profile
 }
 
 # Funcion que incluye rutas al path sin repetir
@@ -51,16 +51,16 @@ function add_to_path {
 
 # Creo funcion que abre el sublime para editar un archivo
 function sublime {
-	if [ "$1" == "" ]; then
-		echo "[ERROR] Tienes que pasar el archivo a editar"
-	else
-		file=$1
-		pushd $(pwd) > /dev/null
-		echo "[INFO] Editando archivo $file ..."
-		/Applications/Sublime\ Text.app/Contents/MacOS/Sublime\ Text $file &> /dev/null &
-		popd > /dev/null
-		echo "[INFO] Archivo $file abierto en ventana nueva con el Sublime"
-	fi
+    if [ "$1" == "" ]; then
+	echo "[ERROR] Tienes que pasar el archivo a editar"
+    else
+	file=$1
+	pushd $(pwd) > /dev/null
+	echo "[INFO] Editando archivo $file ..."
+	/Applications/Sublime\ Text.app/Contents/MacOS/Sublime\ Text $file &> /dev/null &
+	popd > /dev/null
+	echo "[INFO] Archivo $file abierto en ventana nueva con el Sublime"
+    fi
 }
 
 function resetMyWorkingBranch {
