@@ -104,6 +104,18 @@ add_to_path "/usr/local/opt/python/libexec/bin"
 alias ebp="editBashProfile"
 alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs"
 alias cdt="cd ~/trabajo/dbss"
+alias g="git $@"
+alias gb="git branch $@"
+alias gc="git checkout $@"
+alias gf="git fetch"
+alias gg="git log --graph --oneline"
+alias gga="git log --graph --oneline --all"
+alias gh="git help $@"
+alias gr="git remote -v"
+alias grwb="resetMyWorkingBranch"
+alias gs="git status"
+alias gsth="git stash $@"
+echo "Cargado."
 
 # Setting PATH for Python 3.6
 # The original version is saved in .bash_profile.pysave
