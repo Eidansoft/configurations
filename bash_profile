@@ -117,6 +117,10 @@ alias gs="git status"
 alias gsth="git stash $@"
 echo "Cargado."
 
+# Configuro el prompt con el branch del GIT en uso
+source ~/.git-prompt.sh
+GIT_PS1_SHOWDIRTYSTATE=true
+export PS1='\[\033[32m\]\w\[\033[33m\]$(__git_ps1)\[\033[00m\] $ '
 # Setting PATH for Python 3.6
 # The original version is saved in .bash_profile.pysave
 PATH="/Library/Frameworks/Python.framework/Versions/3.6/bin:${PATH}"
