@@ -102,6 +102,8 @@ add_to_path "/usr/local/bin"
 add_to_path "/usr/local/opt/python/libexec/bin"
 # Aliases
 alias ebp="editBashProfile"
+alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs"
+alias cdt="cd ~/trabajo/dbss"
 
 # Setting PATH for Python 3.6
 # The original version is saved in .bash_profile.pysave
