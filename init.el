@@ -24,9 +24,19 @@
 (use-package hl-line
   :init (setq global-hl-line-sticky-flag nil) ;esta variable hace que solo se resalte en el buffer activo
   :config (global-hl-line-mode)
-  :bind (("M-l" . global-hl-line-mode)) ; atajo para activar/desactivar el resalto
+  :bind (("s-l" . resalt_line_and_recenter)) ; atajo para activar/desactivar el resalto
   :demand ;obligo a cargar este paquete directamente, sin esperar a la primera llamada al binding
+  :init
+  (defun resalt_line_and_recenter()
+    "Mark the current line and re-center in the buffer."
+    (interactive)
+    (if global-hl-line-mode
+	(setq global-hl-line-mode nil)
+      	(setq global-hl-line-mode t)
+      )
+    (recenter)
   )
+)
 
 ;autoinstalo magit
 (use-package magit
@@ -73,6 +83,14 @@
         (message "Could not find git project root."))))
   )
 
+(use-package buffer-move
+  :ensure t
+  :bind (("<C-s-up>" . buf-move-up)
+	 ("<C-s-down>" . buf-move-down)
+	 ("<C-s-left>" . buf-move-left)
+	 ("<C-s-right>" . buf-move-right))
+)
+
 (use-package elpy
   ; necesitamos tener instaladas en el sistema unas dependencias en el entorno virtual que configuro abajo, para que esta configuracion de elpy funcione correctamente
   ; pip install --user elpy jedi pylint importmagic autopep8 yapf epc
@@ -86,7 +104,8 @@
   :bind (("M-SPC" . company-complete)
 	 ("s-b" . set_python_breakpoint)
   	 ("s-d" . elpy-doc)
-	 ("s-g" . elpy-goto-definition))
+	 ("s-g" . elpy-goto-definition)
+	 ("s-o" . elpy-goto-definition-other-window))
 )
 
 (use-package flycheck
@@ -107,6 +126,8 @@
 
           ;; ("C-c p f" . helm-projectile-find-file)
           ("C-x C-p" . helm-projectile-find-file)
+	  ("M-b" . helm-buffers-list)
+	  ("s-i" . helm-semantic-or-imenu)
 
           ;; ("C-c p g" . helm-projectile-find-file-dwin)
           ;; ("C-c p d" . helm-projectile-find-dir)
@@ -126,12 +147,17 @@
   (projectile-global-mode)
   (helm-projectile-on))
 
+; macro seleccion de palabra
+(fset 'select-word
+   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217835 67108896 134217969] 0 "%d")) arg)))
+; macro seleccion de linea
+(fset 'select-line
+   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([9 67108896 16] 0 "%d")) arg)))
+
 ; alias de funciones y atajos globales
 (defalias 'keys 'describe-bindings)
 (defalias 'keys-description 'describe-key)
 (defalias 'truncar 'toggle-truncate-lines)
-; atajo global deshacer; Redo es C-g C-z
-(global-set-key (kbd "C-z") 'undo)
 ; Alt-3 y Alt-Shft-3 para comentar/descomentar -> Sobrescrito para tener la almohadilla
 ;; (global-set-key (kbd "s-·") 'comment-line)
 ; atajos de busqueda, se ejecutan con M-x <alias>
@@ -141,11 +167,36 @@
 ; atajo aumentar/disminuir tamano letra
 (global-set-key (kbd "s-+") 'text-scale-increase)
 (global-set-key (kbd "s--") 'text-scale-decrease)
-; atajos de movimientos por el doc
-(global-set-key (kbd "M-p") 'backward-sentence)
-(global-set-key (kbd "M-n") 'forward-sentence)
-(global-set-key (kbd "s-3") "#")
+; atajos de movimientos por el buffer
+(global-set-key (kbd "C-ñ") 'forward-char)
+(global-set-key (kbd "C-k") 'backward-char)
+(global-set-key (kbd "C-l") 'next-line)
+(global-set-key (kbd "C-o") 'previous-line)
+(global-set-key (kbd "M-ñ") 'forward-word)
+(global-set-key (kbd "M-k") 'backward-word)
+(global-set-key (kbd "M-l") 'forward-sentence)
+(global-set-key (kbd "M-o") 'backward-sentence)
+(global-set-key (kbd "C-p") 'move-end-of-line)
+(global-set-key (kbd "C-i") 'move-beginning-of-line)
+(global-set-key (kbd "M-p") 'end-of-buffer)
+(global-set-key (kbd "M-i") 'beginning-of-buffer)
+; copy&paste por el buffer
+; atajo global deshacer; Redo es C-g C-z
+(global-set-key (kbd "C-q") 'undo)
+(global-set-key (kbd "C-w") 'kill-region)
+(global-set-key (kbd "C-e") 'kill-ring-save)
+(global-set-key (kbd "C-r") 'yank)
+; borrado en el buffer
+(global-set-key (kbd "M-d") 'kill-line)
+; atajos de seleccion
+(global-set-key (kbd "C-,") 'select-word)
+(global-set-key (kbd "C-.") 'select-line)
+; atajos caracteres especiales
+(global-set-key (kbd "s-º") "\\")
+(global-set-key (kbd "s-1") "|")
 (global-set-key (kbd "s-2") "@")
+(global-set-key (kbd "s-3") "#")
+(global-set-key (kbd "C-;") 'comment-line)
 
 
 ; configuraciones personales
@@ -157,10 +208,20 @@
 (column-number-mode 1)
 ; cargo el tema
 (load-theme 'wombat)
-; quito las barra
+; quito las barras
 (scroll-bar-mode -1)
+; configuro el scroll con el raton
+(setq mouse-wheel-scroll-amount '(2 ((shift) . 2)))
+(setq mouse-wheel-progressive-speed nil)
 ; setteo el size de la fuente por defecto
 (set-face-attribute 'default nil :height 165)
+;configuro las teclas en el Mac para no perder la # y la @
+;(setq mac-command-modifier 'super)
+;(setq mac-option-modifier 'meta)
+; abro maximizado
+(toggle-frame-fullscreen)
+
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -169,7 +230,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (multiple-cursors all-the-icons neotree helm-projectile flycheck elpy zygospore window-numbering use-package))))
+    (buffer-move multiple-cursors all-the-icons neotree helm-projectile flycheck elpy zygospore window-numbering use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
