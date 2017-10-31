@@ -4,17 +4,6 @@ echo -n "Cargando mi /Users/alex/.bash_profile... "
 # Elimino todos los alias, para recrearlos a continuacion
 unalias -a
 
-# Creo alias para hacer tunneling a una maquina de Necotex
-function tunnelingNecotex {
-	echo "Levantando tunneling en los puertos locales:"
-	echo " - 8090 JasperReports"
-	echo " - 2139 Samba Unidades de Red"
-	echo " - 5180 Router Web Interface"
-	echo " - 5780 NAS Web Interface"
-	echo " - 8080, 5432, 19812, 19813, 19814 PowerShop"
-	sudo ssh -L 8090:172.26.0.5:8090 -L 2139:172.26.0.7:139 -L 5180:172.26.0.1:80 -L 5780:172.26.0.7:80 -L 8080:172.26.0.5:8080 -L 5432:172.26.0.5:5432 -L 19812:172.26.0.5:19812 -L 19813:172.26.0.5:19813 -L 19814:172.26.0.5:19814 user@domain -p PORT
-}
-
 # Funcion para encriptar
 function unencryptFileGpg2 {
     FILE=$1
