@@ -1,2 +1,6 @@
-# Ignore the original ssh config
+# Ignoro temporales
+*~
+*.orig
+
+# Ignoro ssh config original
 config
