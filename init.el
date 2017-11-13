@@ -96,7 +96,7 @@
   ; pip install --user elpy jedi pylint importmagic autopep8 yapf epc
   :ensure t
   :demand
-  :init (fset 'set_python_breakpoint "\C-p\C-e\C-mimport ipdb; ipdb.set_trace()\C-f")
+  :init (fset 'set_python_breakpoint "\C-p\C-e\C-mimport ipdb; ipdb.set_trace(context=21)\C-f")
   (setq elpy-rpc-backend "jedi")
   (pyvenv-activate "~/.virtualenvs/emacs/")
   (add-hook 'python-mode-hook 'company-mode)
