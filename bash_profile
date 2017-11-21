@@ -52,31 +52,6 @@ function sublime {
     fi
 }
 
-function resetMyWorkingBranch {
-    branch=$(git branch | grep "*" | cut -d " " -f 2)
-    if [ "$branch" != "WB" ]; then
-	echo "[ERROR] No estas en la WorkingBranch (WB)."
-    else    # compruebo que no hay nada pendiente de commitear
-	git status | grep "nothing added to commit but untracked files present" 2>&1 > /dev/null
-	untrackedFiles="$?"
-	git status | grep "nothing to commit, working tree clean" 2>&1 > /dev/null
-	allClean="$?"
-	if [ "$untrackedFiles" = "0" ]; then
-	    git status
-	    read -p "[WARNING] Tienes archivos untracked. Seguro que quieres hacer HardReset ? (Y/n)" confirmacion
-	    if [ "$confirmacion" = "Y" -o "$confirmacion" = "y" ];then
-		git reset --hard MY_DOCKER
-	    else
-		echo "[INFO]"
-	    fi
-	elif [ "allClean" = "0" ]; then
-		git reset --hard MY_DOCKER
-	else
-	    echo "[ERROR] Hay cambios pendientes"
-	fi
-    fi
-}
-
 # Creo funcion para el wireshark
 function openWireshark {
 	echo "Configurando el wireshark..."
@@ -105,7 +80,6 @@ alias gg='git log --oneline --graph --pretty=format:"%Cred%h%Creset%C(yellow)%d%
 alias gga='git log --oneline --graph --pretty=format:"%Cred%h%Creset%C(yellow)%d%Creset %<(70,trunc)%s %Cgreen%<(10,trunc)%an%Creset %C(bold blue)%<(14,trunc)%ad%Creset" --topo-order --all'
 alias gh="git help $@"
 alias gr="git remote -v"
-alias grwb="resetMyWorkingBranch"
 alias gs="git status"
 alias gsth="git stash $@"
 
