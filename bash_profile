@@ -58,6 +58,16 @@ function openWireshark {
 	sudo chmod 644 /dev/bpf*
 	wireshark
 }
+
+function activate_virtualenv {
+    env=$1
+    valid_envs=$(ls -la ~/.virtualenvs/ | grep $USER | tr -s " " | cut -d " " -f 9 | grep -v "\.")
+    [ "$env" = "" ] && echo "[ERROR] Tienes que indicar el entorno a cargar. Entornos validos: "$valid_envs && return 1
+    echo $valid_envs | tr " " "\n" | grep -w $env > /dev/null 2>&1
+    [ "$?" != "0" ] && echo "[ERROR] <$env> No es un entorno virtual valido. Entornos validos: "$valid_envs && return 1
+    source ~/.virtualenvs/$env/bin/activate
+}
+
 # Cargando las variables de entorno
 add_to_path "/usr/local/opt/python/libexec/bin"
 add_to_path "/usr/local/bin"
