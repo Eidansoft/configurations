@@ -197,6 +197,10 @@
 (global-set-key (kbd "s-2") "@")
 (global-set-key (kbd "s-3") "#")
 (global-set-key (kbd "C-;") 'comment-line)
+(global-set-key (kbd "<M-left>") 'elpy-nav-indent-shift-left)
+(global-set-key (kbd "<M-right>") 'elpy-nav-indent-shift-right)
+(global-set-key (kbd "<M-up>") 'elpy-nav-move-line-or-region-up)
+(global-set-key (kbd "<M-down>") 'elpy-nav-move-line-or-region-down)
 
 
 ; configuraciones personales
