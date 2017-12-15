@@ -225,7 +225,8 @@
 ; abro maximizado
 (toggle-frame-fullscreen)
 
-
+; setteo a usar espacios en lugar de tabs
+(setq-default indent-tabs-mode nil)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
