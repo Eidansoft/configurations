@@ -224,9 +224,10 @@
 ;(setq mac-option-modifier 'meta)
 ; abro maximizado
 (toggle-frame-fullscreen)
-
 ; setteo a usar espacios en lugar de tabs
 (setq-default indent-tabs-mode nil)
+; setteo que recarge los buffers de los archivos que han sido modificados fuera del Emacs
+(global-auto-revert-mode t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
