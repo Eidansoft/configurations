@@ -5,20 +5,6 @@
      ("melpa" . "http://melpa.org/packages/")))
 (package-initialize)
 
-; remapeo del Ctrl-X a Ctrl-Q y Alt-X a Alt-Q para el Dvorak
-(defun setup-input-decode-map ()
-  (define-key input-decode-map (kbd "C-u") (kbd "C-x"))
-;  (define-key input-decode-map (kbd "C-x") (kbd "C-c"))
-;  (define-key input-decode-map (kbd "M-c") (kbd "M-x"))
-  (define-key input-decode-map (kbd "M-u") (kbd "M-x"))
-;  (define-key input-decode-map (kbd "C-M-c") (kbd "C-M-x"))
-;  (define-key input-decode-map (kbd "C-M-x") (kbd "C-M-c"))
-)
-(setup-input-decode-map)
-
-; desmapeo el Ctrl-C
-(global-set-key "\C-c" nil)
-
 ; autoinstalacion del paquete use-package si no estuviera ya instalado
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -59,10 +45,10 @@
 
 (use-package multiple-cursors
   :ensure t
-  :bind (("C-§" . mc/mark-next-like-this)
-         ("C-±" . mc/mark-previous-like-this)
-         ("C-M-§" . mc/skip-to-next-like-this)
-         ("C-M-±" . mc/skip-to-previous-like-this)
+  :bind (("C-<" . mc/mark-next-like-this)
+         ("C->" . mc/mark-previous-like-this)
+         ("C-M-<" . mc/skip-to-next-like-this)
+         ("C-M->" . mc/skip-to-previous-like-this)
          ("C-S-c C-S-c" . mc/edit-lines)
          ("C-M-0" . mc/mark-all-like-this)
          ("C-c C-<" . mc/mark-all-like-this)
@@ -76,7 +62,7 @@
 
 (use-package neotree
   :ensure t
-  :bind (("M-~" . neotree-toggle))
+  :bind (("M-º" . neotree-toggle))
   :init
   (setq neo-theme (if (display-graphic-p) 'arrow 'arrow) ;; configuro el theme normal tanto para window mode como terminal, si usas 'icons 'arrow hay que habilitar el paquete all-the-icons
         neo-window-position 'left
@@ -97,7 +83,6 @@
         (message "Could not find git project root."))))
   )
 
-; Con Ctrl-Cmd y los cursores muevo los buffers entre ventanas
 (use-package buffer-move
   :ensure t
   :bind (("<C-s-up>" . buf-move-up)
@@ -106,35 +91,29 @@
 	 ("<C-s-right>" . buf-move-right))
 )
 
-;(use-package elpy
+(use-package elpy
   ; necesitamos tener instaladas en el sistema unas dependencias en el entorno virtual que configuro abajo, para que esta configuracion de elpy funcione correctamente
   ; pip install --user elpy jedi pylint importmagic autopep8 yapf epc
-;  :ensure t
-;  :demand
-;  :init (fset 'set_python_breakpoint "\C-p\C-e\C-mimport ipdb; ipdb.set_trace(context=21)\C-f")
-;  (fset 'set_python_mocked_var "\C-p\C-e\C-mimport ipdb; ipdb.set_trace(context=21)\nimport json\nfile = open('/mnt/docker/mocked_content.txt', 'r')\nmocked_response = json.loads(file.read())\C-f")
-;  (setq elpy-rpc-backend "jedi")
-;  (pyvenv-activate "~/.virtualenvs/emacs/")
-;  (add-hook 'python-mode-hook 'company-mode)
-;  :config (elpy-enable) ; cuando termine de cargar elpy, lo ativo
-;  :bind (("M-SPC" . company-complete)
-;	 ("s-b" . set_python_breakpoint)
-;     ("s-m" . set_python_mocked_var)
-;  	 ("s-d" . elpy-doc)
-;	 ("s-g" . elpy-goto-definition)
-;	 ("s-o" . elpy-goto-definition-other-window))
-;)
-; el modo mayor de Python usa Ctrl-C como prefijo, aqui lo libero para poder usarlo como yo quiero
-(defun unbinds-after-load-python ()
-  (define-key python-mode-map (kbd "C-c") nil))
-(eval-after-load "python" '(unbinds-after-load-python))
+  :ensure t
+  :demand
+  :init (fset 'set_python_breakpoint "\C-p\C-e\C-mimport ipdb; ipdb.set_trace(context=21)\C-f")
+  (setq elpy-rpc-backend "jedi")
+  (pyvenv-activate "~/.virtualenvs/emacs/")
+  (add-hook 'python-mode-hook 'company-mode)
+  :config (elpy-enable) ; cuando termine de cargar elpy, lo ativo
+  :bind (("M-SPC" . company-complete)
+	 ("s-b" . set_python_breakpoint)
+  	 ("s-d" . elpy-doc)
+	 ("s-g" . elpy-goto-definition)
+	 ("s-o" . elpy-goto-definition-other-window))
+)
 
-;(use-package flycheck
-;  :ensure t
-;  :init (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-;  (add-hook 'elpy-mode-hook 'flycheck-mode)
-;  :config (global-flycheck-mode)
-;  :bind ("s-e" . flycheck-list-errors))
+(use-package flycheck
+  :ensure t
+  :init (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode)
+  :config (global-flycheck-mode)
+  :bind ("s-e" . flycheck-list-errors))
 
 (use-package helm-projectile
   :ensure t
@@ -189,37 +168,35 @@
 (global-set-key (kbd "s-+") 'text-scale-increase)
 (global-set-key (kbd "s--") 'text-scale-decrease)
 ; atajos de movimientos por el buffer
-(global-set-key (kbd "C-n") 'forward-char)
-(global-set-key (kbd "C-h") 'backward-char)
-(global-set-key (kbd "C-t") 'next-line)
-(global-set-key (kbd "C-c") 'previous-line)
-(global-set-key (kbd "M-n") 'forward-word)
-(global-set-key (kbd "M-h") 'backward-word)
-(global-set-key (kbd "M-t") 'forward-sentence)
-(global-set-key (kbd "M-c") 'backward-sentence)
-(global-set-key (kbd "C-r") 'move-end-of-line)
-(global-set-key (kbd "C-g") 'move-beginning-of-line)
-(global-set-key (kbd "M-r") 'end-of-buffer)
-(global-set-key (kbd "M-g") 'beginning-of-buffer)
+(global-set-key (kbd "C-ñ") 'forward-char)
+(global-set-key (kbd "C-k") 'backward-char)
+(global-set-key (kbd "C-l") 'next-line)
+(global-set-key (kbd "C-o") 'previous-line)
+(global-set-key (kbd "M-ñ") 'forward-word)
+(global-set-key (kbd "M-k") 'backward-word)
+(global-set-key (kbd "M-l") 'forward-sentence)
+(global-set-key (kbd "M-o") 'backward-sentence)
+(global-set-key (kbd "C-p") 'move-end-of-line)
+(global-set-key (kbd "C-i") 'move-beginning-of-line)
+(global-set-key (kbd "M-p") 'end-of-buffer)
+(global-set-key (kbd "M-i") 'beginning-of-buffer)
 ; copy&paste por el buffer
 ; atajo global deshacer; Redo es C-g C-z
-(global-set-key (kbd "C-'") 'undo)
-(global-set-key (kbd "C-,") 'kill-region)
-(global-set-key (kbd "C-.") 'kill-ring-save)
-(global-set-key (kbd "C-p") 'yank)
+(global-set-key (kbd "C-q") 'undo)
+(global-set-key (kbd "C-w") 'kill-region)
+(global-set-key (kbd "C-e") 'kill-ring-save)
+(global-set-key (kbd "C-r") 'yank)
 ; borrado en el buffer
 (global-set-key (kbd "M-d") 'kill-line)
 ; atajos de seleccion
-(global-set-key (kbd "C-m") 'select-word)
-(global-set-key (kbd "C-w") 'select-line)
+(global-set-key (kbd "C-,") 'select-word)
+(global-set-key (kbd "C-.") 'select-line)
 ; atajos caracteres especiales
-(global-set-key (kbd "s-§") "<")
-(global-set-key (kbd "s-±") ">")
-;; (global-set-key (kbd "s-º") "\\")
-;; (global-set-key (kbd "s-1") "|")
-;; (global-set-key (kbd "s-2") "@")
-;; (global-set-key (kbd "s-3") "#")
-(global-set-key (kbd "C-/") 'comment-line)
+(global-set-key (kbd "s-º") "\\")
+(global-set-key (kbd "s-1") "|")
+(global-set-key (kbd "s-2") "@")
+(global-set-key (kbd "s-3") "#")
+(global-set-key (kbd "C-;") 'comment-line)
 (global-set-key (kbd "<M-left>") 'elpy-nav-indent-shift-left)
 (global-set-key (kbd "<M-right>") 'elpy-nav-indent-shift-right)
 (global-set-key (kbd "<M-up>") 'elpy-nav-move-line-or-region-up)
