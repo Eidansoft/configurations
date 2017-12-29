@@ -203,6 +203,12 @@
 ; atajos de busqueda, se ejecutan con M-x <alias>
 (defalias 'se 'rgrep)
 
+; atajo para editar este archivo
+(defun alex_edit_initel ()
+  (interactive)
+  (find-file (expand-file-name "~/personal/configurations/init.el"))
+)
+
 ; atajo global togle truncar lineas
 (global-set-key (kbd "s-t") 'truncar)
 
