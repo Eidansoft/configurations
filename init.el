@@ -151,6 +151,50 @@
 ; y su atajo de seleccion de linea
 ;(global-set-key (kbd "C-d") 'select-line)
 
+; macro breakpoint en python
+(fset 'alex_set_python_breakpoint "\C-r\nimport ipdb; ipdb.set_trace(context=21)\n")
+(global-set-key (kbd "s-b") 'alex_set_python_breakpoint)
+; macro breakpoint y cargar json en variable
+(fset 'alex_set_python_mocked_var "\C-r\nimport ipdb; ipdb.set_trace(context=21)\nimport json\nfile = open('/mnt/docker/mocked_content.txt', 'r')\nmocked_response = json.loads(file.read())\n")
+;; (global-set-key (kbd "s-v") 'alex_set_python_mocked_var)
+
+; macros para mover lineas de texto
+(defun move-line-up ()
+  (interactive)
+  (transpose-lines 1)
+  (forward-line -2))
+(global-set-key (kbd "<M-up>") 'move-line-up)
+
+(defun move-line-down ()
+  (interactive)
+  (forward-line 1)
+  (transpose-lines 1)
+  (forward-line -1))
+(global-set-key (kbd "<M-down>") 'move-line-down)
+
+(defun shift-text (distance)
+  (if (use-region-p)
+      (let ((mark (mark)))
+        (save-excursion
+          (indent-rigidly (region-beginning)
+                          (region-end)
+                          distance)
+          (push-mark mark t t)
+          (setq deactivate-mark nil)))
+    (indent-rigidly (line-beginning-position)
+                    (line-end-position)
+                    distance)))
+
+(defun shift-right (count)
+  (interactive "p")
+  (shift-text count))
+(global-set-key (kbd "<M-right>") 'shift-right)
+
+(defun shift-left (count)
+  (interactive "p")
+  (shift-text (- count)))
+(global-set-key (kbd "<M-left>") 'shift-left)
+
 ; alias de funciones y atajos globales
 (defalias 'keys 'describe-bindings)
 (defalias 'keys-description 'describe-key)
@@ -194,10 +238,6 @@
 (global-set-key (kbd "s-§") "\\")
 (global-set-key (kbd "s-±") "LIBRE")
 (global-set-key (kbd "C-/") 'comment-line)
-(global-set-key (kbd "<M-left>") 'elpy-nav-indent-shift-left)
-(global-set-key (kbd "<M-right>") 'elpy-nav-indent-shift-right)
-(global-set-key (kbd "<M-up>") 'elpy-nav-move-line-or-region-up)
-(global-set-key (kbd "<M-down>") 'elpy-nav-move-line-or-region-down)
 
 ; configuraciones personales
 ; activo el auto-cerrar llaves, parentesis, corchetes, etc...
