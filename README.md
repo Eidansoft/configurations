@@ -10,6 +10,23 @@ Steps to use it:
 
     $ ln -s path-to-project/configurations/git-prompt.sh ~/.git-prompt.sh
 
+* Install brew
+
+    $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+* Install gpg2
+
+    $ brew install gpg2
+
+* Generate Key
+
+    $ ssh-keygen -t rsa
+
+* Unencrypt config.gpg and link it
+
+    $ unencryptFileGpg2 config.gpg
+    $ ln -s path-to-project/configurations/config ~/.ssh/config
+
 ## Configure KDiff3 as merge tool
 Using [KDiff3](http://kdiff3.sourceforge.net) as Git-GUI Merge Tool
  * Add the KDiff3 directory to the Path environment variable
