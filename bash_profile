@@ -11,7 +11,7 @@ function unencryptFileGpg2 {
 	echo "[INFO] El archivo no tiene extension *.gpg"
     else
 	echo "[INFO] Desencriptando $FILE"
-	gpg2 -o ${FILE%.*} --decrypt $FILE
+	gpg -o ${FILE%.*} --decrypt $FILE
 	echo "[INFO] $FILE desencriptado en ${FILE%.*}"
     fi
 }
@@ -19,7 +19,7 @@ function unencryptFileGpg2 {
 function encryptFileGpg2 {
     FILE=$1
     echo "Encriptando $FILE"
-    gpg2 -o ${FILE}.gpg --symmetric $FILE
+    gpg -o ${FILE}.gpg --symmetric $FILE
     echo "[INFO] $FILE encriptado en ${FILE}.gpg"
 }
 
