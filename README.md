@@ -1,33 +1,31 @@
-# git-gui-tools
-My personal tools for a better git-gui
+# Personal system configurations
 
-## Have $FILENAMES variable for tools
-In order to get on GIT-GUI Tools the $FILENAMES variable availablea and be able to execute commands to multiple files for example "rm $FILENAMES" to delete all selected files, you need to medify the file:
+Steps to use it:
+* Clone the project
+* Link the bash-profile file
 
-    Git_PATH/share/git-gui/lib/tools.tcl
+    $ ln -s path-to-project/configurations/bash_profile ~/.bash_profile
 
-In OSx with Git installed by [Brew](https://brew.sh), this file is at:
+* Link the git-prompt.sh file
 
-    /usr/local/git/share/git-gui/lib/tools.tcl
+    $ ln -s path-to-project/configurations/git-prompt.sh ~/.git-prompt.sh
 
-The modified lines are:
+* Install brew
 
-    70  global repo_config env current_diff_path selected_paths
-    103 set env(FILENAMES) [array names selected_paths]
-    126 unset env(FILENAMES)
+    $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-## Set default commit message
-In order to have the default branch name in all commits at Git-Gui you need also modify the files:
- * /usr/local/git/share/git-gui/lib/git-gui.tcl
- * /usr/local/git/share/git-gui/lib/commit.tcl
+* Install gpg2
 
-Adding to the end of git-gui.tcl the following to get the branch name when you open git-gui:
+    $ brew install gpg2
 
-    $ui_comm insert end "[git branch | grep "*" | cut -d " " -f 2] " ; #I set the branch name by default in commits
+* Generate Key
 
-And modifing to commit.tcl line 436 to get the branch name by default after every commit:
+    $ ssh-keygen -t rsa
 
-    $ui_comm insert end "[git branch | grep "*" | cut -d " " -f 2] " ; #I set the branch name by default in commits
+* Unencrypt config.gpg and link it
+
+    $ unencryptFileGpg2 config.gpg
+    $ ln -s path-to-project/configurations/config ~/.ssh/config
 
 ## Configure KDiff3 as merge tool
 Using [KDiff3](http://kdiff3.sourceforge.net) as Git-GUI Merge Tool
