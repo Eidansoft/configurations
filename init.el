@@ -59,9 +59,9 @@
          ("C-±" . mc/mark-previous-like-this)
          ("C-M-§" . mc/skip-to-next-like-this)
          ("C-M-±" . mc/skip-to-previous-like-this)
-         ("C-S-c C-S-c" . mc/edit-lines)
-         ("C-M-0" . mc/mark-all-like-this)
-         ("C-c C-<" . mc/mark-all-like-this)
+         ;; ("C-S-c C-S-c" . mc/edit-lines)
+         ;; ("C-M-0" . mc/mark-all-like-this)
+         ;; ("C-c C-<" . mc/mark-all-like-this)
          ("M-<down-mouse-1>" . mc/add-cursor-on-click)))
 
 (use-package all-the-icons
@@ -72,7 +72,7 @@
 
 (use-package neotree
   :ensure t
-  :bind (("M-~" . neotree-toggle))
+  :bind (("M-\`" . neotree-toggle))
   :init
   (setq neo-theme (if (display-graphic-p) 'arrow 'arrow) ;; configuro el theme normal tanto para window mode como terminal, si usas 'icons 'arrow hay que habilitar el paquete all-the-icons
         neo-window-position 'left
@@ -241,8 +241,8 @@
 (global-set-key (kbd "M-d") 'kill-line)
 
 ; atajos caracteres especiales
-(global-set-key (kbd "s-§") "\\")
-(global-set-key (kbd "s-±") "LIBRE")
+;; (global-set-key (kbd "s-§") "\\")
+;; (global-set-key (kbd "s-±") "LIBRE")
 (global-set-key (kbd "C-/") 'comment-line)
 
 ; configuraciones personales
