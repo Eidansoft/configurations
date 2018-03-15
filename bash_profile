@@ -12,7 +12,7 @@ function unencryptFileGpg2 {
     else
 	echo "[INFO] Desencriptando $FILE"
 	gpg -o ${FILE%.*} --decrypt $FILE
-	echo "[INFO] $FILE desencriptado en ${FILE%.*}"
+	[ "$?" = 0 ] && echo "[INFO] $FILE desencriptado en ${FILE%.*}" || echo "[ERROR] Clave incorrerta"
     fi
 }
 
@@ -78,6 +78,7 @@ alias ebp="editBashProfile"
 alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs"
 alias cdt="pushd ~/trabajo/dbss"
 alias cdp="pushd ~/personal"
+alias cb="git rev-parse --abbrev-ref HEAD"
 alias dk="/Users/alorente/trabajo/dbss/docker/run.sh $@"
 alias g="git $@"
 alias ga="git add $@"
