@@ -140,17 +140,6 @@
   (projectile-global-mode)
   (helm-projectile-on))
 
-; macro seleccion de palabra
-;(fset 'select-word
-;      (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217835 67108896 134217969] 0 "%d")) arg)))
-; atajos de seleccion
-;(global-set-key (kbd "C-i") 'select-word)
-; macro seleccion de linea
-;(fset 'select-line
-;      (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([9 67108896 16] 0 "%d")) arg)))
-; y su atajo de seleccion de linea
-;(global-set-key (kbd "C-d") 'select-line)
-
 ; macro breakpoint en python
 (fset 'alex_set_python_breakpoint "\C-r\nimport ipdb; ipdb.set_trace(context=21)\n")
 (global-set-key (kbd "s-b") 'alex_set_python_breakpoint)
@@ -208,6 +197,32 @@
   (interactive)
   (find-file (expand-file-name "~/personal/configurations/init.el"))
 )
+
+; seleccionar palabra actual
+(defun alex_select_current_word ()
+  (interactive)
+  (forward-word)
+  (push-mark (point) t t)
+  (backward-word)
+  )
+; atajos de seleccion
+(global-set-key (kbd "C-x m") 'alex_select_current_word)
+; macro seleccion de linea
+(defun alex_select_current_line ()
+  (interactive)
+  (end-of-line)
+  (push-mark (point) t t)
+  (beginning-of-line)
+  )
+; y su atajo de seleccion de linea
+(global-set-key (kbd "C-x w") 'alex_select_current_line)
+
+; buscar clase python en el proyecto dbss
+(defun alex_search_py_class ()
+  (interactive)
+  (setq searchterm (buffer-substring (mark) (point)))
+  (rgrep (concat "class " searchterm) "*.py" "~/trabajo/dbss")
+  )
 
 ; atajo global togle truncar lineas
 (global-set-key (kbd "s-t") 'truncar)
@@ -276,4 +291,7 @@
 
 ; setteo que recarge los buffers de los archivos que han sido modificados fuera del Emacs
 (global-auto-revert-mode t)
+
+; setteo que al guardar limpie los espacios en blanco
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
