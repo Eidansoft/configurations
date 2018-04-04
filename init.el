@@ -295,3 +295,7 @@
 ; setteo que al guardar limpie los espacios en blanco
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+; autoactivo el autocompletar para los lenguajes que me interesan
+(global-auto-complete-mode t)
+(setq ac-modes '(emacs-lisp-mode sh-mode python-mode))
+
