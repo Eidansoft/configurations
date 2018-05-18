@@ -297,5 +297,5 @@
 
 ; autoactivo el autocompletar para los lenguajes que me interesan
 (global-auto-complete-mode t)
-(setq ac-modes '(emacs-lisp-mode sh-mode python-mode))
+(setq ac-modes '(emacs-lisp-mode sh-mode python-mode groovy-mode))
 
