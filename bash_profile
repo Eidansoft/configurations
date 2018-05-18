@@ -59,6 +59,7 @@ function openWireshark {
 	wireshark
 }
 
+# Funcion para manejar los entornos virtuales
 function activate_virtualenv {
     env=$1
     valid_envs=$(ls -la ~/.virtualenvs/ | grep $USER | tr -s " " | cut -d " " -f 9 | grep -v "\.")
@@ -66,6 +67,34 @@ function activate_virtualenv {
     echo $valid_envs | tr " " "\n" | grep -w $env > /dev/null 2>&1
     [ "$?" != "0" ] && echo "[ERROR] <$env> No es un entorno virtual valido. Entornos validos: "$valid_envs && return 1
     source ~/.virtualenvs/$env/bin/activate
+}
+
+# Funcion para listar las tags (previa actualizacion) o si recibe un hash por parametro, lista las tags que lo incluyen
+function list_tags(){
+    commit=$1
+    git fetch --tags
+    [ "$commit" = "" ] && git tag || git tag --contains $commit
+}
+
+# Funcion para listar y seleccionar comodamente una branch
+function select_git_branch(){
+    branches=$(git branch | grep -v '*' | tr -d " ")
+    [ "$branches" = "" ] && return 1
+    options=($branches)
+    PS3="What branch do you wanna select? "
+    select opt in "${options[@]}"; do
+        echo $opt
+        break
+    done
+}
+
+# Funcion para hacer checkout de una branch seleccionandola comodamente
+function git_checkout_interactive(){
+    echo "Possible branches:"
+    selected_branch=$(select_git_branch)
+    [ "$selected_branch" = "" ] && echo "[ERROR] No valid branch." && return 1
+    echo "Checking out: $selected_branch"
+    git checkout $selected_branch
 }
 
 # Cargando las variables de entorno
@@ -84,12 +113,14 @@ alias g="git $@"
 alias ga="git add $@"
 alias gb="git branch $@"
 alias gc="git checkout $@"
+alias gci="git_checkout_interactive"
 alias gclean="git clean -f; git checkout -- ."
 alias gd="git diff $@"
 alias gf="git fetch"
 alias gg='git log --oneline --graph --pretty=format:"%Cred%h%Creset%C(yellow)%d%Creset %<(70,trunc)%s %Cgreen%<(10,trunc)%an%Creset %C(bold blue)%<(14,trunc)%ad%Creset" --topo-order'
 alias gga='git log --oneline --graph --pretty=format:"%Cred%h%Creset%C(yellow)%d%Creset %<(70,trunc)%s %Cgreen%<(10,trunc)%an%Creset %C(bold blue)%<(14,trunc)%ad%Creset" --topo-order --all'
 alias gh="git help $@"
+alias glt="list_tags $@"
 alias gr="git remote -v"
 alias gs="git status"
 alias gsth="git stash $@"
