@@ -72,7 +72,7 @@ function activate_virtualenv {
 # Funcion para listar las tags (previa actualizacion) o si recibe un hash por parametro, lista las tags que lo incluyen
 function list_tags(){
     commit=$1
-    git fetch --tags
+    git fetch --prune origin "+refs/tags/*:refs/tags/*"
     [ "$commit" = "" ] && git tag || git tag --contains $commit
 }
 
@@ -97,6 +97,114 @@ function git_checkout_interactive(){
     git checkout $selected_branch
 }
 
+# Funcion para ver las migraciones entre dos tags
+function git_migrations_between(){
+    new_tag=$1
+    old_tag=$2
+    git fetch
+    [ "$new_tag" = "" -o "$old_tag" = "" ] && echo "[ERROR] Both the new and old tag must be provided." && return 1
+    echo ""
+    echo "The list of migrations between <$new_tag> and <$old_tag> are:"
+    git diff $old_tag $new_tag  --name-status | grep -E '0[01][0-9]'
+}
+
+# Funcion para crear comodamente tags
+function git_create_tag(){
+    tag=$1
+    [ "$tag" = "" ] && echo "[ERROR] You must provide the tag name." && return 1
+    git push origin $(git rev-parse --abbrev-ref HEAD)
+    git fetch --prune origin "+refs/tags/*:refs/tags/*"
+    git tag -a $tag -m "created tag $tag"
+    git push origin $tag
+}
+
+# Funcion para eliminar comodamente tags
+function git_delete_tag(){
+    tag=$1
+    [ "$tag" = "" ] && echo "[ERROR] You must provide the tag name." && return 1
+    git fetch --prune origin "+refs/tags/*:refs/tags/*"
+    git push --delete origin $tag
+    git tag --delete $tag
+}
+
+# Funcion para crear imagenes de docker
+function docker_create_image(){
+    folder=$1
+    name=$2
+    [ "$folder" = "" -o "$name" = "" ] && echo "[ERROR] The folder containing the Dockerfile and name for the image are mandatory." && return 1
+    [ ! -d "$folder" ] && echo "[ERROR] The folder provided <$folder> is not valid." && return 1
+    docker build $folder -t $name
+}
+
+function git_ancestor(){
+    pushedrev="$(git rev-parse HEAD)"
+    echo "Checking hash $pushedrev"
+    basename=djezzy_golive_v3
+    if ! baserev="$(git rev-parse --verify refs/heads/"$basename" 2>/dev/null)"; then
+        echo "'$basename' is missing, call for help!"
+        exit 1
+    fi
+
+    parents_of_commits_beyond_base="$(
+      git rev-list --pretty=tformat:%P "$pushedrev" --not "$baserev" | grep -v '^commit '
+    )"
+
+    case "$parents_of_commits_beyond_base" in
+        *\ *)          echo "must not push merge commits (rebase instead)"
+               ;;
+        *"$baserev"*)  echo "Everything is OK"
+               ;;
+        *)             echo "must descend from tip of '$basename'"
+               ;;
+
+    esac
+}
+
+function docker_clean_images(){
+    # Clean all temporal or not tagged docker images
+    images_ids=$(docker images | grep "<none>" | tr -s " " | cut -d " " -f 3)
+    for image in $images_ids; do
+        docker rmi $image
+    done
+}
+
+function docker_clean_containers(){
+    # Clean al already exited docker containers
+    containers_ids=$(docker ps -a | grep "Exited" | tr -s " " | cut -d " " -f 1)
+    for container in $containers_ids; do
+        docker rm $container
+    done
+}
+
+function git_delete_all_branches() {
+    excluded_branches=("djezzy_golive_uat" "djezzy_golive_prod" "djezzy_golive_v3")
+    all_branches=$(git branch | grep -v ^*)
+    for branch in $all_branches
+    do
+        git branch -D
+    done
+}
+
+function launch_cluster_ssh() {
+    params=$1
+    [ -x ~/personal/configurations/toggle_Terminal_maximize.sh ] && ~/personal/configurations/toggle_Terminal_maximize.sh || echo "[ERROR] The toggle maximization script is not properly configured."
+    sleep 1
+    num_screens=$(system_profiler SPDisplaysDataType | grep -v "^          " | grep "^        " | tr -s " " | wc -l)
+    if [ "$num_screens" -gt "1" ]; then
+        echo "Two screen detected, using the second one..."
+        csshX --screen 2 $params
+    else
+        csshX $params
+    fi
+}
+
+function git_commits_between(){
+    newest_hash=$1
+    oldest_hash=$2
+    [ -z "$newest_hash" -o -z "$oldest_hash" ] && echo "[ERROR] The new and old hash params are mandatory." && return 1
+    git log --oneline --format=%s --reverse ${oldest_hash}..${newest_hash} | grep -v "^Merge"
+}
+
 # Cargando las variables de entorno
 add_to_path "/usr/local/opt/python/libexec/bin"
 add_to_path "/usr/local/bin"
@@ -108,18 +216,30 @@ alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs"
 alias cdt="pushd ~/trabajo/dbss"
 alias cdp="pushd ~/personal"
 alias cb="git rev-parse --abbrev-ref HEAD"
+alias cssh="launch_cluster_ssh $@"
+alias dci="docker_create_image $@"
+alias ddai="docker_clean_images"
+alias ddac="docker_clean_containers"
+alias ddi="docker rmi $1"
+alias dvi="docker images"
+alias dti="docker run -it --name test --rm $@"
 alias dk="/Users/alorente/trabajo/dbss/docker/run.sh $@"
 alias g="git $@"
 alias ga="git add $@"
 alias gb="git branch $@"
 alias gc="git checkout $@"
 alias gci="git_checkout_interactive"
-alias gclean="git clean -f; git checkout -- ."
+alias gct="git_create_tag $@"
+alias gdab="git_delete_all_branches $@"
+alias gdt="git_delete_tag $@"
+alias gcb="git_commits_between $@"
+alias gclean="git clean -fdx; git checkout -- ."
 alias gd="git diff $@"
 alias gf="git fetch"
 alias gg='git log --oneline --graph --pretty=format:"%Cred%h%Creset%C(yellow)%d%Creset %<(70,trunc)%s %Cgreen%<(10,trunc)%an%Creset %C(bold blue)%<(14,trunc)%ad%Creset" --topo-order'
 alias gga='git log --oneline --graph --pretty=format:"%Cred%h%Creset%C(yellow)%d%Creset %<(70,trunc)%s %Cgreen%<(10,trunc)%an%Creset %C(bold blue)%<(14,trunc)%ad%Creset" --topo-order --all'
 alias gh="git help $@"
+alias glm="git_migrations_between $@"
 alias glt="list_tags $@"
 alias gr="git remote -v"
 alias gs="git status"
