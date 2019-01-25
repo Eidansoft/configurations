@@ -245,6 +245,9 @@ alias gr="git remote -v"
 alias gs="git status"
 alias gsth="git stash $@"
 
+# Configuro la busqueda en el historico de comandos para que pueda hacer Ctrl-s y buscar hacia delante (hacia atras ya lo hace por defecto con el Ctrl-r)
+stty -ixon
+
 # Configuro el prompt con el branch del GIT en uso
 source ~/.git-prompt.sh
 GIT_PS1_SHOWDIRTYSTATE=true
