@@ -115,7 +115,7 @@ function git_create_tag(){
     git push origin $(git rev-parse --abbrev-ref HEAD)
     git fetch --prune origin "+refs/tags/*:refs/tags/*"
     git tag -a $tag -m "created tag $tag"
-    git push origin $tag
+    git push origin refs/tags/$tag
 }
 
 # Funcion para eliminar comodamente tags
@@ -123,7 +123,7 @@ function git_delete_tag(){
     tag=$1
     [ "$tag" = "" ] && echo "[ERROR] You must provide the tag name." && return 1
     git fetch --prune origin "+refs/tags/*:refs/tags/*"
-    git push --delete origin $tag
+    git push --delete origin refs/tags/$tag
     git tag --delete $tag
 }
 
