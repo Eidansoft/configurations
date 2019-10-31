@@ -23,18 +23,27 @@ function encryptFileGpg2 {
     echo "[INFO] $FILE encriptado en ${FILE}.gpg"
 }
 
-# Creo funcion que me permite editar el .bash_profile y cargarlo directamente
-function editBashProfile {
-    /Applications/Emacs.app/Contents/MacOS/Emacs -nw /Users/alorente/.bash_profile
-    source /Users/alorente/.bash_profile
-}
-
-# Funcion que incluye rutas al path sin repetir
+# Funcion que incluye rutas al path sin repetir, dando preferencia
+# a la ultima added
 function add_to_path {
-    ruta=$1
+    ruta=$(stat -f $1)
+    [ -d "$ruta" ] || (echo "[ERROR] Path provided to be added <$ruta> to PATH does not exists." && return 1)
     echo "$PATH" | grep -e ":\?${ruta}:" > /dev/null
     if [ "$?" != 0 ]; then
 	export PATH="${ruta}:${PATH}"
+    fi
+}
+
+# Funcion que incluye rutas al cdpath sin repetir, dando preferencia
+# a las que ya hay primero
+export CDPATH="."
+function add_to_cdpath {
+    ruta=$(stat -f $1 )
+    [ "$ruta" = "" -o "$ruta" = "." ] && echo "[ERROR] Path provided to be added to the CDPATH <$ruta> not valid." && return 1
+    [ -d "$ruta" ] || (echo "[ERROR] Path provided to be added <$ruta> to CDPATH does not exists. " && return 1)
+    echo "$CDPATH" | grep -e ":${ruta}:\?" > /dev/null
+    if [ "$?" != 0 ]; then
+        export CDPATH="${CDPATH}:${ruta}"
     fi
 }
 
@@ -160,20 +169,9 @@ function git_ancestor(){
     esac
 }
 
-function docker_clean_images(){
-    # Clean all temporal or not tagged docker images
-    images_ids=$(docker images | grep "<none>" | tr -s " " | cut -d " " -f 3)
-    for image in $images_ids; do
-        docker rmi $image
-    done
-}
-
-function docker_clean_containers(){
-    # Clean al already exited docker containers
-    containers_ids=$(docker ps -a | grep "Exited" | tr -s " " | cut -d " " -f 1)
-    for container in $containers_ids; do
-        docker rm $container
-    done
+function docker_clean(){
+    docker container prune -f
+    docker image prune --filter "dangling=true" -f
 }
 
 function git_delete_all_branches() {
@@ -205,25 +203,51 @@ function git_commits_between(){
     git log --oneline --format=%s --reverse ${oldest_hash}..${newest_hash} | grep -v "^Merge"
 }
 
+function dpython2(){
+    docker run -it --rm --name testpython2 -v $(pwd):/mnt eidansoft/python2 /bin/bash
+}
+
+function dpython3(){
+    docker run -it --rm --name testpython3 -v $(pwd):/mnt eidansoft/python3 /bin/bash
+}
+
+function doctave(){
+    echo ''
+    echo 'REMMEMBER TO USE graphics_toolkit gnuplot IF YOU NEED PLOT'
+    echo ''
+    xhost +
+    sleep 3
+    docker run -it --name octave --rm -v $(pwd):/mnt -e DISPLAY=host.docker.internal:0 eidansoft/octave
+}
+
 # Cargando las variables de entorno
-add_to_path "/usr/local/opt/python/libexec/bin"
-add_to_path "/usr/local/bin"
-add_to_path "/usr/local/opt/python/libexec/bin"
+add_to_path /usr/local/opt/python/libexec/bin
+add_to_path /usr/local/bin
+add_to_path /usr/local/opt/python/libexec/bin
+
+# Cargando variables del cdpath
+add_to_cdpath ~
+add_to_cdpath ~/trabajo
+add_to_cdpath ~/personal
 
 # Aliases
-alias ebp="editBashProfile"
-alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs"
+alias cd..="cd .."
+alias cd...="cd ../.."
+alias cd....="cd ../../.."
 alias cdt="pushd ~/trabajo/dbss"
 alias cdp="pushd ~/personal"
 alias cb="git rev-parse --abbrev-ref HEAD"
 alias cssh="launch_cluster_ssh $@"
+alias cssh_alg_sit_wapps="csshX $@ allorent@10.96.3.2 allorent@10.96.3.3"
+alias cssh_alg_sit_qapis="csshX $@ allorent@10.96.3.6 allorent@10.96.3.7"
+alias cssh_alg_uat_wapps="csshX $@ allorent@10.96.3.66 allorent@10.96.3.67 allorent@10.96.3.68 allorent@10.96.3.69 allorent@10.96.3.70 allorent@10.96.3.71 allorent@10.96.3.72 allorent@10.96.3.73"
+alias cssh_alg_uat_qapis="csshX $@ allorent@10.96.3.75 allorent@10.96.3.76 allorent@10.96.3.77 allorent@10.96.3.78"
+alias cssh_alg_prod_wapps="csshX $@ allorent@10.96.2.8 allorent@10.96.2.9 allorent@10.96.2.10 allorent@10.96.2.11 allorent@10.96.2.12 allorent@10.96.2.13 allorent@10.96.2.14 allorent@10.96.2.15 allorent@10.96.2.16 allorent@10.96.2.17 allorent@10.96.2.18 allorent@10.96.2.19 allorent@10.96.2.20 allorent@10.96.2.21 allorent@10.96.2.22 allorent@10.96.2.23 allorent@10.96.2.24 allorent@10.96.2.25 allorent@10.96.2.26 allorent@10.96.2.27 allorent@10.96.2.28 allorent@10.96.2.29 allorent@10.96.2.30 allorent@10.96.2.31 allorent@10.96.2.32 allorent@10.96.2.33 allorent@10.96.2.34 allorent@10.96.2.35 allorent@10.96.2.36 allorent@10.96.2.37 allorent@10.96.2.38 allorent@10.96.2.39"
+alias cssh_alg_prod_qapis="csshX $@ allorent@10.96.2.42 allorent@10.96.2.43 allorent@10.96.2.44 allorent@10.96.2.45 allorent@10.96.2.46 allorent@10.96.2.47 allorent@10.96.2.48 allorent@10.96.2.49"
 alias dci="docker_create_image $@"
-alias ddai="docker_clean_images"
-alias ddac="docker_clean_containers"
+alias dclean="docker_clean"
 alias ddi="docker rmi $1"
 alias dvi="docker images"
-alias dti="docker run -it --name test --rm $@"
-alias dk="/Users/alorente/trabajo/dbss/docker/run.sh $@"
 alias fsecurestop="launchctl list | grep secure && echo 'launchctl remove todos los listados'"
 alias g="git $@"
 alias ga="git add $@"
@@ -247,7 +271,8 @@ alias globalprotectstart="echo 'Starting...' && launchctl load /Library/LaunchAg
 alias gr="git remote -v"
 alias gs="git status"
 alias gsth="git stash $@"
-
+alias gu="git fetch && git pull"
+alias jupyter-start-locally="echo 'Launching Jupyter at localhost:8888' ; docker run -d --rm -p 8888:8888 --name jupyter -v /Users/alorente/personal/proyectos:/home/jovyan/work eidansoft/jupyter start-notebook.sh --ip 0.0.0.0"
 # Configuro la busqueda en el historico de comandos para que pueda hacer Ctrl-s y buscar hacia delante (hacia atras ya lo hace por defecto con el Ctrl-r)
 stty -ixon
 
