@@ -172,6 +172,7 @@ function git_ancestor(){
 function docker_clean(){
     docker container prune -f
     docker image prune --filter "dangling=true" -f
+    docker images | tr -s ' ' | grep "<none>" | cut -d ' ' -f 3 | xargs -I % docker rmi %
 }
 
 function git_delete_all_branches() {
@@ -204,11 +205,13 @@ function git_commits_between(){
 }
 
 function dpython2(){
-    docker run -it --rm --name testpython2 -v $(pwd):/mnt eidansoft/python2 /bin/bash
+    docker_params=$1
+    docker run -it --rm --name testpython2 -v $(pwd):/mnt $docker_params eidansoft/python2 /bin/bash
 }
 
 function dpython3(){
-    docker run -it --rm --name testpython3 -v $(pwd):/mnt eidansoft/python3 /bin/bash
+    docker_params=$1
+    docker run -it --rm --name testpython3 -v $(pwd):/mnt $docker_params eidansoft/python3 /bin/bash
 }
 
 function doctave(){
@@ -218,6 +221,12 @@ function doctave(){
     xhost +
     sleep 3
     docker run -it --name octave --rm -v $(pwd):/mnt -e DISPLAY=host.docker.internal:0 eidansoft/octave
+}
+
+function nas_ls(){
+    ping -c 1 -t 1 nas > /dev/null
+    [ "$?" != "0" ] && echo "[ERROR] Nas do not reply to ping, are you sure it's turned on?" && return 1
+    rsync --list-only rsync://alex@nas:873/$@
 }
 
 # Cargando las variables de entorno
@@ -244,6 +253,10 @@ alias cssh_alg_uat_wapps="csshX $@ allorent@10.96.3.66 allorent@10.96.3.67 allor
 alias cssh_alg_uat_qapis="csshX $@ allorent@10.96.3.75 allorent@10.96.3.76 allorent@10.96.3.77 allorent@10.96.3.78"
 alias cssh_alg_prod_wapps="csshX $@ allorent@10.96.2.8 allorent@10.96.2.9 allorent@10.96.2.10 allorent@10.96.2.11 allorent@10.96.2.12 allorent@10.96.2.13 allorent@10.96.2.14 allorent@10.96.2.15 allorent@10.96.2.16 allorent@10.96.2.17 allorent@10.96.2.18 allorent@10.96.2.19 allorent@10.96.2.20 allorent@10.96.2.21 allorent@10.96.2.22 allorent@10.96.2.23 allorent@10.96.2.24 allorent@10.96.2.25 allorent@10.96.2.26 allorent@10.96.2.27 allorent@10.96.2.28 allorent@10.96.2.29 allorent@10.96.2.30 allorent@10.96.2.31 allorent@10.96.2.32 allorent@10.96.2.33 allorent@10.96.2.34 allorent@10.96.2.35 allorent@10.96.2.36 allorent@10.96.2.37 allorent@10.96.2.38 allorent@10.96.2.39"
 alias cssh_alg_prod_qapis="csshX $@ allorent@10.96.2.42 allorent@10.96.2.43 allorent@10.96.2.44 allorent@10.96.2.45 allorent@10.96.2.46 allorent@10.96.2.47 allorent@10.96.2.48 allorent@10.96.2.49"
+alias cssh_ban_prodDC1_wapps="csshX $@ --ssh_args '-J bangla_prod_jump' alorente@10.74.8.21 alorente@10.74.8.22 alorente@10.74.8.23 alorente@10.74.8.24 alorente@10.74.8.25 alorente@10.74.8.26 alorente@10.74.8.27 alorente@10.74.8.28 alorente@10.74.8.29 alorente@10.74.8.30 alorente@10.74.8.31 alorente@10.74.8.32 alorente@10.74.8.33 alorente@10.74.8.34 alorente@10.74.8.35 alorente@10.74.8.36"
+alias cssh_ban_prodDC1_qapis="csshX $@ --ssh_args '-J bangla_prod_jump' alorente@10.74.8.61 alorente@10.74.8.62 alorente@10.74.8.63 alorente@10.74.8.64 alorente@10.74.8.65 alorente@10.74.8.66 alorente@10.74.8.67 alorente@10.74.8.68 alorente@10.74.8.235 alorente@10.74.8.236 alorente@10.74.8.237 alorente@10.74.8.238"
+alias cssh_ban_prodDC2_wapps="csshX $@ --ssh_args '-J bangla_prod_jump' alorente@10.74.9.21 alorente@10.74.9.22 alorente@10.74.9.23 alorente@10.74.9.24 alorente@10.74.9.25 alorente@10.74.9.26 alorente@10.74.9.27 alorente@10.74.9.28 alorente@10.74.9.29 alorente@10.74.9.30 alorente@10.74.9.31 alorente@10.74.9.32 alorente@10.74.9.33 alorente@10.74.9.34 alorente@10.74.9.35 alorente@10.74.9.36"
+alias cssh_ban_prodDC2_qapis="csshX $@ --ssh_args '-J bangla_prod_jump' alorente@10.74.9.61 alorente@10.74.9.62 alorente@10.74.9.63 alorente@10.74.9.64 alorente@10.74.9.65 alorente@10.74.9.66 alorente@10.74.9.67 alorente@10.74.9.68"
 alias dci="docker_create_image $@"
 alias dclean="docker_clean"
 alias ddi="docker rmi $1"
@@ -273,6 +286,9 @@ alias gs="git status"
 alias gsth="git stash $@"
 alias gu="git fetch && git pull"
 alias jupyter-start-locally="echo 'Launching Jupyter at localhost:8888' ; docker run -d --rm -p 8888:8888 --name jupyter -v /Users/alorente/personal/proyectos:/home/jovyan/work eidansoft/jupyter start-notebook.sh --ip 0.0.0.0"
+alias notify_me_on_telegram='docker run -it --rm --name telegram -v /Users/alorente/.telegram_send_config_alex.conf:/home/telegram/conf eidansoft/telegram-send telegram-send --config conf "$([ $? = 0 ] && echo "" || echo "error: ") $(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*tg$//'\'')"'
+alias vsc="/Applications/Visual\ Studio\ Code.app/Contents/MacOS/Electron $@"
+
 # Configuro la busqueda en el historico de comandos para que pueda hacer Ctrl-s y buscar hacia delante (hacia atras ya lo hace por defecto con el Ctrl-r)
 stty -ixon
 
